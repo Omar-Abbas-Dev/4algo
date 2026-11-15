@@ -1,0 +1,286 @@
+@import "tailwindcss";
+
+/* ============================================================
+   NAVX ARENA — Global Design System
+   ============================================================ */
+
+@layer base {
+  :root {
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-display: 'Space Grotesk', 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+    /* Algorithm brand colors */
+    --color-bfs: #3B82F6;
+    --color-dfs: #EC4899;
+    --color-greedy: #F97316;
+    --color-astar: #10B981;
+
+    /* Glow intensities */
+    --glow-bfs: rgba(59, 130, 246, 0.6);
+    --glow-dfs: rgba(236, 72, 153, 0.6);
+    --glow-greedy: rgba(249, 115, 22, 0.6);
+    --glow-astar: rgba(16, 185, 129, 0.6);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-950 text-slate-100 antialiased;
+    font-family: var(--font-sans);
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+
+  .font-mono, code, .tabular-nums {
+    font-family: var(--font-mono);
+  }
+
+  ::selection {
+    @apply bg-emerald-500/30 text-emerald-100;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-600; }
+}
+
+/* ============================================================
+   GLASSMORPHISM PANELS
+   ============================================================ */
+.glass {
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-bright {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* ============================================================
+   AMBIENT GRID BACKGROUND
+   ============================================================ */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ============================================================
+   NEON GLOW UTILITIES
+   ============================================================ */
+.glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 40px rgba(16, 185, 129, 0.15); }
+.glow-blue    { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.15); }
+.glow-purple  { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
+.glow-amber   { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
+.glow-sm-emerald { box-shadow: 0 0 10px rgba(16, 185, 129, 0.35); }
+.glow-sm-blue    { box-shadow: 0 0 10px rgba(59, 130, 246, 0.35); }
+
+/* ============================================================
+   CUSTOM KEYFRAME ANIMATIONS
+   ============================================================ */
+@keyframes navx-pulse-ring {
+  0%   { transform: scale(1);    opacity: 0.8; }
+  70%  { transform: scale(1.6);  opacity: 0;   }
+  100% { transform: scale(1.6);  opacity: 0;   }
+}
+
+@keyframes navx-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes navx-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+@keyframes navx-scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes navx-countdown {
+  0%   { transform: scale(2);   opacity: 0; }
+  20%  { transform: scale(1);   opacity: 1; }
+  80%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.5); opacity: 0; }
+}
+
+@keyframes navx-winner-appear {
+  0%   { transform: scale(0.8) translateY(10px); opacity: 0; }
+  60%  { transform: scale(1.05) translateY(-2px); opacity: 1; }
+  100% { transform: scale(1) translateY(0);       opacity: 1; }
+}
+
+@keyframes navx-bar-fill {
+  from { width: 0%; }
+  to   { width: var(--bar-width); }
+}
+
+@keyframes navx-tick {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes navx-orbit {
+  from { transform: rotate(0deg) translateX(14px) rotate(0deg);   }
+  to   { transform: rotate(360deg) translateX(14px) rotate(-360deg); }
+}
+
+@keyframes navx-bg-move {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ============================================================
+   ANIMATION UTILITY CLASSES
+   ============================================================ */
+.animate-pulse-ring {
+  animation: navx-pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+.animate-float {
+  animation: navx-float 3s ease-in-out infinite;
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: navx-shimmer 2s linear infinite;
+}
+.animate-countdown {
+  animation: navx-countdown 1s ease-in-out forwards;
+}
+.animate-winner {
+  animation: navx-winner-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.animate-bg-move {
+  animation: navx-bg-move 8s ease infinite;
+  background-size: 200% 200%;
+}
+.animate-tick {
+  animation: navx-tick 1s ease-in-out infinite;
+}
+
+/* ============================================================
+   GRADIENT TEXT
+   ============================================================ */
+.gradient-text-brand {
+  background: linear-gradient(135deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FDE68A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ============================================================
+   BUTTON HOVER SHIMMER
+   ============================================================ */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.5s;
+}
+.btn-shimmer:hover::after {
+  transform: translateX(100%);
+}
+
+/* ============================================================
+   ALGO CARD HOVER BORDER GLOW
+   ============================================================ */
+.algo-card-bfs:hover   { border-color: rgba(59,130,246,0.6);  box-shadow: 0 0 24px rgba(59,130,246,0.15); }
+.algo-card-dfs:hover   { border-color: rgba(236,72,153,0.6);  box-shadow: 0 0 24px rgba(236,72,153,0.15); }
+.algo-card-greedy:hover{ border-color: rgba(249,115,22,0.6);  box-shadow: 0 0 24px rgba(249,115,22,0.15); }
+.algo-card-astar:hover { border-color: rgba(16,185,129,0.6);  box-shadow: 0 0 24px rgba(16,185,129,0.15); }
+
+/* ============================================================
+   MODAL BACKDROP ENTRY
+   ============================================================ */
+.modal-backdrop-enter {
+  animation: modal-fade-in 0.2s ease forwards;
+}
+.modal-panel-enter {
+  animation: modal-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: scale(0.95) translateY(16px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* ============================================================
+   PROGRESS BAR ANIMATED
+   ============================================================ */
+.progress-bar-animated {
+  animation: navx-bar-fill 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ============================================================
+   SCAN LINE EFFECT (subtle decorative)
+   ============================================================ */
+.scan-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(16,185,129,0.3), transparent);
+  animation: navx-scan-line 4s linear infinite;
+  pointer-events: none;
+}
+
+/* ============================================================
+   RANK MEDALS
+   ============================================================ */
+.medal-gold   { color: #FBBF24; text-shadow: 0 0 8px rgba(251,191,36,0.6); }
+.medal-silver { color: #94A3B8; text-shadow: 0 0 8px rgba(148,163,184,0.4); }
+.medal-bronze { color: #D97706; text-shadow: 0 0 8px rgba(217,119,6,0.4); }
+
+/* ============================================================
+   TOOL BUTTON ACTIVE STATE
+   ============================================================ */
+.tool-active {
+  position: relative;
+}
+.tool-active::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, currentColor, transparent);
+  opacity: 0.2;
+  pointer-events: none;
+}
