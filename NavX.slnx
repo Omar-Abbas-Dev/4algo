@@ -1,0 +1,31 @@
+<Solution>
+  <Folder Name="/docs/">
+    <File Path="README.md" />
+    <File Path="docs/ADR-001-Clean-Architecture.md" />
+    <File Path="docs/ADR-002-CQRS-and-MediatR.md" />
+    <File Path="docs/ADR-003-Python-Engine-IPC-Contract.md" />
+    <File Path="docs/ADR-004-Audio-Sonification-NAudio-and-WebAudio.md" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/frontend/">
+    <File Path="src/frontend/package.json" />
+    <File Path="src/frontend/vite.config.ts" />
+    <File Path="src/frontend/src/App.tsx" />
+  </Folder>
+  <Folder Name="/src/backend/">
+    <Project Path="src/backend/NavX.Api/NavX.Api.csproj" />
+    <Project Path="src/backend/NavX.Application/NavX.Application.csproj" />
+    <Project Path="src/backend/NavX.Domain/NavX.Domain.csproj" />
+    <Project Path="src/backend/NavX.Infrastructure/NavX.Infrastructure.csproj" />
+    <Folder Name="/src/backend/NavX.AlgorithmEngine/">
+      <File Path="src/backend/NavX.AlgorithmEngine/main.py" />
+      <File Path="src/backend/NavX.AlgorithmEngine/tests/test_algorithms.py" />
+    </Folder>
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NavX.Api.IntegrationTests/NavX.Api.IntegrationTests.csproj" />
+    <Project Path="tests/NavX.Application.Tests/NavX.Application.Tests.csproj" />
+    <Project Path="tests/NavX.ArchitectureTests/NavX.ArchitectureTests.csproj" />
+    <Project Path="tests/NavX.Domain.Tests/NavX.Domain.Tests.csproj" />
+  </Folder>
+</Solution>

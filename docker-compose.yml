@@ -1,0 +1,19 @@
+services:
+  navx-arena:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persist the SQLite database outside the container
+      - navx_data:/app/data
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - PythonEngine__Executable=python3
+      - PythonEngine__EnginePath=/app/NavX.AlgorithmEngine/main.py
+    restart: unless-stopped
+
+volumes:
+  navx_data:
+    driver: local

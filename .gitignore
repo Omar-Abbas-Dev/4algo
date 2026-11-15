@@ -1,0 +1,41 @@
+# Build outputs
+bin/
+obj/
+*.user
+
+# Frontend
+node_modules/
+src/frontend/dist/
+
+# Database (runtime data — lives in /data at project root)
+data/*.db
+data/*.db-shm
+data/*.db-wal
+# Safety net: never commit stray SQLite files anywhere else
+*.db
+*.db-shm
+*.db-wal
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# IDE
+.vs/
+.vscode/settings.json
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets / local machine config
+appsettings.Local.json
+appsettings.Development.json
+*.pfx
+*.key
+
+# Docker local overrides
+docker-compose.override.yml

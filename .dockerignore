@@ -1,0 +1,40 @@
+# Docker ignore — keep the build context small and fast
+
+# Git
+.git
+.gitignore
+
+# .NET build outputs
+**/bin/
+**/obj/
+
+# Frontend dev artifacts (we npm ci inside Docker)
+src/frontend/node_modules/
+src/frontend/.vite/
+# Keep src/frontend/dist OUT (Docker builds it from source)
+src/frontend/dist/
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.pytest_cache/
+
+# Database files (persisted via Docker volume)
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# IDE and OS
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+Thumbs.db
+.DS_Store
+
+# Misc
+README.md
+runtimes/
