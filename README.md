@@ -1,4 +1,4 @@
-# NavX Arena
+# Where is my home
 
 **A visual pathfinding race for exploring how search algorithms make decisions.**
 
