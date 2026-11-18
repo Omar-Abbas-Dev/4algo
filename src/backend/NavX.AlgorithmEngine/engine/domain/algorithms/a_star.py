@@ -1,16 +1,3 @@
-"""A* Search algorithm.
-
-A* combines the actual cost from the start (g) with an admissible heuristic
-estimate to the goal (h) to guide expansion: f = g + h.
-
-The heuristic used is Manhattan distance, which is admissible because the
-minimum cost per step on this grid is 1 (OPEN cell), so manhattan(pos, goal)
-never over-estimates the remaining cost.
-
-A* guarantees the minimum-cost path and typically explores far fewer nodes
-than BFS or DFS on weighted grids.
-"""
-
 import heapq
 from typing import List, Optional, Dict
 from engine.domain.grid import Grid, Position
@@ -19,7 +6,7 @@ from engine.domain.search import SearchResult
 
 
 class AStarSearch:
-    """A* — optimal and efficient via f = g + h."""
+
 
     name: str = "A*"
 

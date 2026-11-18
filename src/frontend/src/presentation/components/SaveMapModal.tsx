@@ -66,22 +66,21 @@ export const SaveMapModal: React.FC<Props> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
-      <div className="glass-bright rounded-2xl max-w-xl w-full shadow-2xl shadow-black/70
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter race-modal-backdrop">
+      <div className="glass-bright race-modal rounded-2xl max-w-xl w-full
         max-h-[90vh] flex flex-col modal-panel-enter border border-white/[0.1]">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 glow-sm-emerald">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
               <BookmarkPlus className="w-6 h-6 text-emerald-400" />
             </div>
             <div>
               <h2 className="text-xl font-black text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                Map Library
+                Course Garage
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Save & load custom map presets</p>
+              <p className="text-xs text-slate-500 mt-0.5">Save your custom street circuits</p>
             </div>
           </div>
           <button
@@ -126,11 +125,11 @@ export const SaveMapModal: React.FC<Props> = ({
               <button
                 type="submit"
                 disabled={saving || !mapName.trim()}
-                className="btn-shimmer flex items-center gap-1.5 px-4 py-2.5 rounded-xl
+                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl
                   font-bold text-sm text-white
                   bg-gradient-to-r from-emerald-600 to-teal-600
                   hover:from-emerald-500 hover:to-teal-500
-                  shadow-md shadow-emerald-500/20
+                  
                   transition-all duration-200 disabled:opacity-50 active:scale-95"
               >
                 {saving
@@ -188,10 +187,10 @@ export const SaveMapModal: React.FC<Props> = ({
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => { onLoadMap(m); onClose(); }}
-                        className="btn-shimmer flex items-center gap-1 px-3 py-1.5 rounded-lg
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg
                           text-xs font-bold text-white
                           bg-indigo-600 hover:bg-indigo-500
-                          shadow-sm shadow-indigo-500/20
+                          
                           transition-all duration-200 active:scale-95"
                       >
                         <FolderOpen className="w-3 h-3" /> Load
@@ -221,7 +220,7 @@ export const SaveMapModal: React.FC<Props> = ({
         <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end">
           <button
             onClick={onClose}
-            className="btn-shimmer px-5 py-2.5 rounded-xl font-semibold text-sm
+            className="px-5 py-2.5 rounded-xl font-semibold text-sm
               bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08]
               text-white transition-all duration-200"
           >

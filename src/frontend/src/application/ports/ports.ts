@@ -17,24 +17,3 @@ export interface StatsGateway {
   getStats(): Promise<Stats>;
 }
 
-export type SoundEvent =
-  | 'click'
-  | 'traffic'
-  | 'thud'
-  | 'start_placed'
-  | 'goal_placed'
-  | 'countdown'
-  | 'countdown_go'
-  | 'nopath'
-  | 'winner';
-
-export interface SoundPlayer {
-  playTone(waveform: OscillatorType, frequency: number, duration: number, pan?: number, volume?: number): void;
-  playExploredTick(algorithm: AlgorithmName, heuristicDistance: number): void;
-  playEvent(event: SoundEvent): void;
-  playArrival(algorithm: AlgorithmName): void;
-  playWinnerFanfare(): void;
-  setMuted(muted: boolean): void;
-  isMuted(): boolean;
-  unlockAudio(): Promise<void>;
-}

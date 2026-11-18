@@ -1,4 +1,3 @@
-"""Grid domain model for NavX Algorithm Engine."""
 
 from typing import List, Tuple, Optional
 

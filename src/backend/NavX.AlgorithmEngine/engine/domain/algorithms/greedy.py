@@ -1,11 +1,3 @@
-"""Greedy Best-First Search algorithm.
-
-Greedy expands the node that *looks* closest to the goal (lowest heuristic
-value) without considering path cost so far.  It is fast and explores few
-nodes but is NOT guaranteed to find the optimal path — it can be misled by
-the heuristic and take a more expensive route than A*.
-"""
-
 import heapq
 from typing import List, Optional, Dict
 from engine.domain.grid import Grid, Position
@@ -14,8 +6,6 @@ from engine.domain.search import SearchResult
 
 
 class GreedyBestFirstSearch:
-    """Greedy Best-First — fast, heuristic-guided, not optimal."""
-
     name: str = "Greedy"
 
     def search(self, grid: Grid, start: Position, goal: Position) -> SearchResult:

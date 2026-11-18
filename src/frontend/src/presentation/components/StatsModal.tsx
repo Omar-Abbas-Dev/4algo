@@ -34,22 +34,21 @@ export const StatsModal: React.FC<Props> = ({ isOpen, onClose }) => {
     : ALGO_LIST;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
-      <div className="glass-bright rounded-2xl max-w-2xl w-full shadow-2xl shadow-black/70
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter race-modal-backdrop">
+      <div className="glass-bright race-modal rounded-2xl max-w-2xl w-full
         max-h-[90vh] flex flex-col modal-panel-enter border border-white/[0.1]">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 glow-purple">
+            <div className="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20">
               <BarChart3 className="w-6 h-6 text-purple-400" />
             </div>
             <div>
               <h2 className="text-xl font-black text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                Algorithm Statistics
+                Season Stats
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">Global tournament win rates & metrics</p>
+              <p className="text-xs text-slate-500 mt-0.5">Racer records from every completed run</p>
             </div>
           </div>
           <button
@@ -110,12 +109,11 @@ export const StatsModal: React.FC<Props> = ({ isOpen, onClose }) => {
                           {isLeader && <span className="text-lg leading-none">🥇</span>}
                           <span
                             className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: cfg.color, boxShadow: `0 0 8px ${cfg.color}60` }}
+                            style={{ backgroundColor: cfg.color }}
                           />
                           <span className="font-black text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
                             {algo}
                           </span>
-                          <span className="text-xs text-slate-500">{cfg.character}</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs font-mono tabular-nums">
                           <span className="text-slate-400">{count} wins</span>
@@ -135,7 +133,7 @@ export const StatsModal: React.FC<Props> = ({ isOpen, onClose }) => {
                           style={{
                             width: `${Math.max(pct > 0 ? 2 : 0, pct)}%`,
                             backgroundColor: cfg.color,
-                            boxShadow: `0 0 8px ${cfg.color}60`,
+                            
                             transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)',
                           }}
                         />
@@ -168,7 +166,7 @@ export const StatsModal: React.FC<Props> = ({ isOpen, onClose }) => {
         <div className="px-6 py-4 border-t border-white/[0.05] flex justify-end">
           <button
             onClick={onClose}
-            className="btn-shimmer px-5 py-2.5 rounded-xl font-semibold text-sm
+            className="px-5 py-2.5 rounded-xl font-semibold text-sm
               bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08]
               text-white transition-all duration-200"
           >

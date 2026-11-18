@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import confetti from 'canvas-confetti';
 import { useContainer } from '../../app/container';
 import {
   AlgorithmName,
@@ -11,18 +10,14 @@ import {
 } from '../../domain/models/types';
 import { createDefaultGrid, generateRandomMap, PRESET_MAPS, MapPreset } from '../../domain/rules/presetMaps';
 import { AnimationFrameState } from '../../application/services/RaceAnimator';
-import { Header } from '../components/Header';
 import { GridCanvas } from '../components/GridCanvas';
 import { Toolbox } from '../components/Toolbox';
 import { Scoreboard } from '../components/Scoreboard';
 import { RaceControls } from '../components/RaceControls';
-import { SonificationLegend } from '../components/SonificationLegend';
-import { HistoryModal } from '../components/HistoryModal';
-import { StatsModal } from '../components/StatsModal';
 import { SaveMapModal } from '../components/SaveMapModal';
 
 export const ArenaPage: React.FC = () => {
-  const { raceGateway, soundPlayer, raceAnimator } = useContainer();
+  const { raceGateway, raceAnimator } = useContainer();
 
   // Grid state
   const defaultPreset = PRESET_MAPS[0];
@@ -50,29 +45,17 @@ export const ArenaPage: React.FC = () => {
   const [speed, setSpeed] = useState(2.0);
   const [isLoading, setIsLoading] = useState(false);
   const [lastResult, setLastResult] = useState<RaceResult | null>(null);
-  const [isMuted, setIsMuted] = useState(false);
   const [selectedAlgos, setSelectedAlgos] = useState<Set<AlgorithmName>>(
     () => new Set<AlgorithmName>(['BFS', 'DFS', 'Greedy', 'A*'])
   );
 
   // Modals
-  const [legendOpen, setLegendOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
-  const [statsOpen, setStatsOpen] = useState(false);
   const [saveModalOpen, setSaveModalOpen] = useState(false);
-  const [totalRaceCount, setTotalRaceCount] = useState(0);
 
   // Subscribe to animator
   useEffect(() => {
     const unsubscribe = raceAnimator.subscribe((state) => {
       setAnimState(state);
-      if (state.isCompleted && state.winner) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
-      }
     });
     return () => unsubscribe();
   }, [raceAnimator]);
@@ -98,7 +81,6 @@ export const ArenaPage: React.FC = () => {
         }
         raceAnimator.reset(newStart);
         setLastResult(null);
-        soundPlayer.playEvent('start_placed');
         return;
       }
 
@@ -112,7 +94,6 @@ export const ArenaPage: React.FC = () => {
         }
         raceAnimator.reset(start);
         setLastResult(null);
-        soundPlayer.playEvent('goal_placed');
         return;
       }
 
@@ -134,31 +115,22 @@ export const ArenaPage: React.FC = () => {
       next[row][col] = nextVal;
       setGrid(next);
 
-      // Play sound per painted cell type
-      if (nextVal === CellType.Open) soundPlayer.playEvent('click');
-      else if (nextVal === CellType.Traffic) soundPlayer.playEvent('traffic');
-      else if (nextVal === CellType.Blocked) soundPlayer.playEvent('thud');
     },
-    [animState.isRunning, animState.isCompleted, start, goal, grid, soundPlayer, raceAnimator]
+    [animState.isRunning, animState.isCompleted, start, goal, grid, raceAnimator]
   );
 
   // Start race
   const handleStartRace = async () => {
     setIsLoading(true);
-    await soundPlayer.unlockAudio();
-    soundPlayer.playEvent('countdown_go');
-
     try {
       const res = await raceGateway.runRace(grid, start, goal, [...selectedAlgos]);
       setLastResult(res);
-      setTotalRaceCount((n) => n + 1);
       raceAnimator.setRace(res);
       raceAnimator.setSpeed(speed);
       raceAnimator.start();
       setIsPaused(false);
     } catch (err: unknown) {
       alert((err as Error).message || 'Failed to run race.');
-      soundPlayer.playEvent('nopath');
     } finally {
       setIsLoading(false);
     }
@@ -188,12 +160,6 @@ export const ArenaPage: React.FC = () => {
     raceAnimator.setSpeed(newSpeed);
   };
 
-  const handleToggleMute = () => {
-    const nextMuted = !isMuted;
-    setIsMuted(nextMuted);
-    soundPlayer.setMuted(nextMuted);
-  };
-
   const handleSelectPreset = (preset: MapPreset) => {
     setGrid(preset.grid.map((r) => [...r]));
     setStart([...preset.start]);
@@ -209,7 +175,6 @@ export const ArenaPage: React.FC = () => {
     setLastResult(null);
     setIsPaused(false);
     raceAnimator.reset(start);
-    soundPlayer.playEvent('click');
   };
 
   const handleClearGrid = () => {
@@ -217,7 +182,6 @@ export const ArenaPage: React.FC = () => {
     setLastResult(null);
     setIsPaused(false);
     raceAnimator.reset(start);
-    soundPlayer.playEvent('thud');
   };
 
   const handleLoadMap = (saved: SavedMap) => {
@@ -229,16 +193,6 @@ export const ArenaPage: React.FC = () => {
     setLastResult(null);
     setIsPaused(false);
     raceAnimator.reset(nextStart);
-  };
-
-  const handleLoadReplay = (replay: RaceResult) => {
-    setGrid(replay.grid.map((r) => [...r]));
-    setStart(replay.start);
-    setGoal(replay.goal);
-    setLastResult(replay);
-    raceAnimator.setRace(replay);
-    raceAnimator.start();
-    setIsPaused(false);
   };
 
   const timeResults: Record<AlgorithmName, number> = {
@@ -257,60 +211,38 @@ export const ArenaPage: React.FC = () => {
   };
 
   return (
-    <div className="h-screen bg-slate-950 text-slate-100 flex flex-col font-sans grid-bg overflow-hidden">
-      {/* Ambient radial glows */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-        <div className="absolute -top-32 left-1/4 w-96 h-96 rounded-full bg-emerald-500/5 blur-3xl animate-float" />
-        <div className="absolute top-1/2 -right-24 w-80 h-80 rounded-full bg-blue-500/5 blur-3xl"
-          style={{ animation: 'navx-float 4s ease-in-out 1s infinite' }} />
-        <div className="absolute bottom-0 left-1/3 w-72 h-72 rounded-full bg-purple-500/4 blur-3xl"
-          style={{ animation: 'navx-float 5s ease-in-out 2s infinite' }} />
-      </div>
-
-      <Header
-        onOpenLegend={() => setLegendOpen(true)}
-        onOpenHistory={() => setHistoryOpen(true)}
-        onOpenStats={() => setStatsOpen(true)}
-        isMuted={isMuted}
-        onToggleMute={handleToggleMute}
-        raceCount={totalRaceCount}
-      />
-
-      <main className="flex-1 min-h-0 max-w-[1720px] w-full mx-auto px-2 sm:px-3 py-2 flex flex-col gap-2 overflow-hidden">
-        {/* Top Stage: Canvas + Controls on Left, Toolbox on Right */}
-        <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-2.5 items-stretch overflow-hidden">
-          {/* Main Visual Arena Canvas & Race Controls */}
-          <div className="flex-1 min-h-0 flex flex-col gap-2 overflow-hidden">
+    <div className="arena-game">
+      <main className="game-main">
+        <section className="gameplay-section" aria-label="City race arena">
+          <div className="game-arena">
             <GridCanvas
               grid={grid}
               start={start}
               goal={goal}
               cars={animState.cars}
-              exploredCells={animState.exploredCells}
               activePaths={animState.activePaths}
               currentTool={currentTool}
               onCellPaint={handleCellPaint}
               isRacing={animState.isRunning}
             />
-
-            <RaceControls
-              isRacing={animState.isRunning}
-              isPaused={isPaused}
-              isCompleted={animState.isCompleted}
-              fromCache={lastResult?.fromCache}
-              speed={speed}
-              selectedAlgos={selectedAlgos}
-              onSelectAlgos={setSelectedAlgos}
-              onStartRace={handleStartRace}
-              onPauseResume={handlePauseResume}
-              onReset={handleReset}
-              onChangeSpeed={handleSpeedChange}
-              isLoading={isLoading}
-            />
           </div>
+          <RaceControls
+            isRacing={animState.isRunning}
+            isPaused={isPaused}
+            isCompleted={animState.isCompleted}
+            speed={speed}
+            selectedAlgos={selectedAlgos}
+            onSelectAlgos={setSelectedAlgos}
+            onStartRace={handleStartRace}
+            onPauseResume={handlePauseResume}
+            onReset={handleReset}
+            onChangeSpeed={handleSpeedChange}
+            isLoading={isLoading}
+          />
+        </section>
 
-          {/* Map Painter Toolbox Sidebar */}
-          <div className="w-full lg:w-72 xl:w-80 shrink-0 flex flex-col min-h-0">
+        <div className="game-lower-panels">
+          <div className="game-track-column">
             <Toolbox
               currentTool={currentTool}
               onSelectTool={setCurrentTool}
@@ -321,10 +253,7 @@ export const ArenaPage: React.FC = () => {
               isRacing={animState.isRunning}
             />
           </div>
-        </div>
 
-        {/* Live Scoreboard Telemetry HUD */}
-        <div className="shrink-0">
           <Scoreboard
             cars={animState.cars}
             winner={animState.winner}
@@ -337,13 +266,6 @@ export const ArenaPage: React.FC = () => {
       </main>
 
       {/* Modals */}
-      <SonificationLegend isOpen={legendOpen} onClose={() => setLegendOpen(false)} />
-      <HistoryModal
-        isOpen={historyOpen}
-        onClose={() => setHistoryOpen(false)}
-        onLoadReplay={handleLoadReplay}
-      />
-      <StatsModal isOpen={statsOpen} onClose={() => setStatsOpen(false)} />
       <SaveMapModal
         isOpen={saveModalOpen}
         onClose={() => setSaveModalOpen(false)}

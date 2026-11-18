@@ -1,5 +1,4 @@
 import { AlgorithmName, AlgorithmResult, Position, RaceResult } from '../../domain/models/types';
-import { SoundPlayer } from '../ports/ports';
 
 export interface CarState {
   algorithm: AlgorithmName;
@@ -23,7 +22,6 @@ export interface AnimationFrameState {
 
 export class RaceAnimator {
   private raceResult: RaceResult | null = null;
-  private soundPlayer: SoundPlayer | null = null;
   private animFrameId: number | null = null;
   private isRunning: boolean = false;
   private speed: number = 2.0; // Speed factor
@@ -84,10 +82,6 @@ export class RaceAnimator {
     };
   }
 
-  public setSoundPlayer(player: SoundPlayer): void {
-    this.soundPlayer = player;
-  }
-
   public setSpeed(speedMultiplier: number): void {
     this.speed = Math.max(0.2, Math.min(20, speedMultiplier));
   }
@@ -127,7 +121,6 @@ export class RaceAnimator {
     this.isRunning = true;
     this.state.isRunning = true;
 
-    // Countdown sounds then run loop
     let lastTime = performance.now();
 
     const loop = (time: number) => {
@@ -209,11 +202,6 @@ export class RaceAnimator {
         expIdx++;
         car.exploredCountSoFar = expIdx;
 
-        // Sonification: trigger heuristic tick sound
-        if (s === 0 && this.soundPlayer) {
-          const h = Math.abs(cell[0] - this.goal[0]) + Math.abs(cell[1] - this.goal[1]);
-          this.soundPlayer.playExploredTick(algo, h);
-        }
       }
       this.exploredIndex[algo] = expIdx;
 
@@ -240,9 +228,6 @@ export class RaceAnimator {
               const cellCost = raceGrid[car.targetPosition[0]]?.[car.targetPosition[1]] ?? 1;
               if (cellCost > 0) {
                 car.costSoFar += cellCost;
-                if (cellCost === 5 && this.soundPlayer) {
-                  this.soundPlayer.playEvent('traffic');
-                }
               }
 
               // Build active path
@@ -255,9 +240,6 @@ export class RaceAnimator {
               car.targetPosition = [...this.goal];
               car.costSoFar = res.cost ?? car.costSoFar;
 
-              if (this.soundPlayer) {
-                this.soundPlayer.playArrival(algo);
-              }
             }
           }
         }
@@ -279,9 +261,6 @@ export class RaceAnimator {
       this.state.isCompleted = true;
       this.state.winner = this.raceResult.winner;
 
-      if (this.soundPlayer && this.raceResult.winner) {
-        this.soundPlayer.playWinnerFanfare();
-      }
     }
   }
 

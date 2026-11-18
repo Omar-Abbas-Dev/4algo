@@ -1,4 +1,3 @@
-"""Domain package for NavX Algorithm Engine."""
 
 from engine.domain.grid import Grid, Position
 from engine.domain.heuristics import manhattan

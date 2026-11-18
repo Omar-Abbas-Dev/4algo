@@ -163,7 +163,7 @@ Cloud production deployment (a local or containerized demo only).
 | **Logistics Company Owner** | Business sponsor | Lower fuel cost, higher on-time delivery. | High |
 | **Project Team** | Developers and testers | Deliver a high-quality, well-documented system. | High |
 | **Academic Supervisor** | Guidance and evaluation | Technical depth, originality, correct theory. | High |
-| **Examination Committee** | Final evaluation | Clear problem, sound design, working demo. | High |
+| **Examination Committee** | Final evaluation | Clear problem, visual design, working demo. | High |
 | **Innovation University** | Institution | Innovative, practical student work. | Medium |
 | **Future Students** | Secondary users | A reusable, open reference project. | Low |
 

@@ -1,4 +1,3 @@
-"""Algorithm package exports."""
 
 from engine.domain.algorithms.bfs import BreadthFirstSearch
 from engine.domain.algorithms.dfs import DepthFirstSearch

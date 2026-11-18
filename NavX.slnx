@@ -4,7 +4,6 @@
     <File Path="docs/ADR-001-Clean-Architecture.md" />
     <File Path="docs/ADR-002-CQRS-and-MediatR.md" />
     <File Path="docs/ADR-003-Python-Engine-IPC-Contract.md" />
-    <File Path="docs/ADR-004-Audio-Sonification-NAudio-and-WebAudio.md" />
   </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/frontend/">

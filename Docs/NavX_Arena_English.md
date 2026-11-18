@@ -6,7 +6,7 @@
 
 ## 1. Overview
 
-**Project idea:** Four search algorithms (BFS, DFS, Greedy, and A*) race simultaneously across the same city map. Each algorithm has its own color, car, and distinctive sound. A live scoreboard displays Cost, the number of explored cells, and execution time. The winner is the algorithm with the lowest Fuel Cost.
+**Project idea:** Four search algorithms (BFS, DFS, Greedy, and A*) race simultaneously across the same city map. Each algorithm has its own color and car. A live scoreboard displays Cost, the number of explored cells, and execution time. The winner is the algorithm with the lowest Fuel Cost.
 
 **Map Model:**
 
@@ -458,7 +458,6 @@ python-engine/
 | Server state | TanStack Query |
 | Client state | Zustand |
 | Validation | Zod |
-| Audio playback | Browser Web Audio API |
 | Race rendering | Canvas 2D; optionally upgrade to PixiJS if performance requires it |
 | Charts | Recharts |
 | Testing | Vitest + React Testing Library |
@@ -472,12 +471,11 @@ frontend/src/
 │   ├── models/             Cell, Position, AlgorithmName, RaceResult, ...
 │   └── rules/              gridFactory, randomMap, ...
 ├── application/            Use cases + Ports
-│   ├── ports/              RaceGateway, MapGateway, SoundPlayer
+│   ├── ports/              RaceGateway, MapGateway, StatsGateway
 │   ├── useCases/           runRace, saveMap, loadStats
 │   └── services/           RaceAnimator (animation logic; time is injected)
 ├── infrastructure/         Port adapters
 │   ├── api/                httpClient, HttpRaceGateway, generated types, mappers
-│   └── audio/              BrowserSoundPlayer, soundMap
 ├── presentation/           UI
 │   ├── components/         GridCanvas, Toolbox, Scoreboard, RaceControls, ...
 │   ├── pages/              ArenaPage, StatsPage
@@ -488,97 +486,9 @@ frontend/src/
 **Rules:**
 
 - Follow the same dependency rule: `presentation → application → domain`; `infrastructure` implements the ports.
-- **Do not put `fetch` or `AudioContext` inside a Component or Use Case**; keep them in Infrastructure.
+- **Do not put HTTP requests inside a Component or Use Case**; keep them in Infrastructure.
 - Keep Dependency Injection simple: the Composition Root in `app/container.ts` creates the adapters and injects them into the use cases, exposed through React Context. An IoC library is unnecessary.
-- Store each algorithm's sound settings (Waveform + Pan) together as data in `soundMap.ts`, rather than scattering them throughout the code.
 - Components are responsible for presentation only.
-
----
-
-## 14. Audio Design — Sonification
-
-The application itself generates sound effects in response to events occurring during the race. This is **Sonification**: the algorithm can be heard as well as seen. The race is therefore both visual and auditory. Each algorithm has a recognizable audio identity, allowing users to distinguish them even without looking at the screen.
-
-### 14.1 Distinctive Sound Identity for Each Algorithm
-
-| Algorithm | Waveform | Pan (Stereo Position) | Audio Character |
-|---|---|---|---|
-| BFS | Sine (smooth) | Left | Calm, regular pulses |
-| DFS | Square (sharp) | Slightly left | Descending tones |
-| Greedy | Triangle | Slightly right | Fast and impulsive |
-| A* | Sawtooth | Right | Intelligent and balanced |
-
-### 14.2 Event-to-Sound Mapping
-
-| Application Event | Sound Effect |
-|---|---|
-| Drawing an open road | Soft click |
-| Drawing a traffic cell | Low, muted honk |
-| Drawing a blocked cell | Heavy thud |
-| Placing the Start point | Upward-rising tone |
-| Placing the Goal point | Downward-falling tone |
-| Countdown | Three evenly spaced beeps, followed by a higher-pitched **“GO”** beep |
-| A cell is explored | Short tick; the pitch **increases as the algorithm gets closer to the goal**, based on heuristic value `h` |
-| A car enters traffic | The sound drops in pitch and becomes heavier |
-| A car reaches the goal | Short arpeggio with a distinct character for each algorithm |
-| Winner (lowest Cost) | Fanfare |
-| No path found | Two descending error tones |
-
-### 14.3 Dramatic Race Audio Moment
-
-In many cases, Greedy may reach the goal first in terms of execution time, while A* may win based on Cost. Make the first algorithm to arrive play a normal arrival sound, and reserve the fanfare for the algorithm with the lowest Cost. The review panel should understand the distinction without needing a lengthy explanation.
-
-### 14.4 Recommended C# Audio Library: NAudio
-
-<badge color="success">Recommended for C# audio generation</badge>
-
-Use **NAudio** as the primary .NET audio library for generating the project's sound effects in C#.
-
-- NAudio is a widely used .NET audio library and provides low-level audio APIs suitable for generating and processing audio.
-- Use its signal-generation capabilities to create the required waveforms: Sine, Square, Triangle, and Sawtooth.
-- Generate short sound effects such as clicks, ticks, beeps, honks, thuds, descending tones, arpeggios, and the winner fanfare.
-- Use stereo audio and channel-volume/panning capabilities to give each algorithm its own spatial identity.
-- Use `WaveFileWriter` to export generated effects as WAV files.
-- Keep audio generation behind an abstraction such as `ISoundEffectGenerator`, with a NAudio-based implementation such as `NAudioSoundEffectGenerator`.
-
-**Important architecture decision:** The main application is a web application: React runs in the user's browser, while C# runs on the backend. NAudio can generate the audio in C#, but it should not be treated as a browser audio player. A practical approach is to generate the sound-effect WAV assets in C# (either ahead of time or when the application initializes), make those assets available to the frontend, and let the browser play them through the Web Audio API. This keeps sound generation in C# while leaving browser playback in the frontend, where it belongs.
-
-For sounds whose pitch changes dynamically according to the heuristic `h`, either generate a small set of pitch variants in C# or send the relevant event/pitch parameter to the frontend and synthesize that particular tone there. Avoid sending a separate HTTP request for every explored cell; that would add unnecessary latency during the race.
-
-**Suggested C# audio structure:**
-
-```text
-NavX.Infrastructure/
-└── Audio/
-    ├── ISoundEffectGenerator.cs
-    ├── NAudioSoundEffectGenerator.cs
-    ├── SoundEffectOptions.cs
-    └── GeneratedAudio/
-        ├── bfs/
-        ├── dfs/
-        ├── greedy/
-        ├── astar/
-        └── events/
-```
-
-**Integration rules:**
-
-- Keep NAudio-specific code in Infrastructure; do not reference NAudio from Domain or Application.
-- Define the audio-generation interface in Application if the use cases need to request generated audio.
-- Generate reusable audio assets in advance wherever possible.
-- Use the Web Audio API in React for playback, volume control, stereo positioning, and synchronization with the race animation.
-- Add a visible Mute/Unmute control and a way to preview the audio legend.
-- Respect browser autoplay restrictions: initialize or resume audio only after the user interacts with the page.
-- Keep audio optional. The race must remain fully usable when sound is muted or unavailable.
-
-**Audio acceptance criteria:**
-
-- Each algorithm can be distinguished by its waveform and stereo position.
-- Each listed map-editing and race event triggers the appropriate sound.
-- The explored-cell tick changes pitch according to the heuristic value.
-- The first arrival and the lowest-Cost winner produce different sounds.
-- Mute/Unmute works throughout the application.
-- Audio playback does not block or slow down the race animation.
 
 ---
 
@@ -593,7 +503,6 @@ NavX.Infrastructure/
 | Architecture | NetArchTest | Domain has no dependencies, Application does not depend on Infrastructure, Controllers contain no logic |
 | Python | pytest | Each algorithm: valid paths, no-path cases, `A* cost ≤ the others` |
 | Frontend | Vitest | `RaceAnimator`, use cases with fake gateways, core Components |
-| Audio | xUnit | Waveform generation, WAV output, sound mapping, and generated audio metadata |
 
 **Contract tests:** A shared sample JSON file is tested by both Python and C#.
 
@@ -621,7 +530,6 @@ NavX.Infrastructure/
 3. Run the same map again and demonstrate that the response is faster because of caching.
 4. Display the Stats (the number of wins for each algorithm).
 5. Demonstrate the **Architecture tests** failing when a dependency rule is violated.
-6. Enable the audio and demonstrate the distinctive sound identities, event effects, arrival sound, and winner fanfare. Then demonstrate Mute.
 
 ---
 
@@ -635,4 +543,3 @@ NavX.Infrastructure/
 | Contract changes between C# and Python | Use `contractVersion` and shared contract tests |
 | MediatR and AutoMapper licensing | See Section 2; isolate them behind abstractions |
 | Internet connection unavailable during the presentation | Run everything locally and prepare a backup video |
-| No audio from the presentation device | Keep a visible Mute control and test the sound before the demo |

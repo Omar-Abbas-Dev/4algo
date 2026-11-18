@@ -1,15 +1,3 @@
-"""Breadth-First Search (BFS) algorithm.
-
-BFS explores level-by-level and guarantees the shortest path in terms of
-*number of steps* (hops). On a weighted grid this means it may NOT find
-the minimum-cost path; it finds the fewest-step path.  The fuel cost
-shown is therefore the sum of cell weights along that fewest-hop route,
-which can be higher than A* (which minimises cumulative cell cost).
-
-This is the correct and intended behaviour: each algorithm has a
-different optimality characteristic.
-"""
-
 from collections import deque
 from typing import List, Optional, Dict
 from engine.domain.grid import Grid, Position
@@ -17,7 +5,6 @@ from engine.domain.search import SearchResult
 
 
 class BreadthFirstSearch:
-    """BFS — optimal for unweighted graphs (fewest hops)."""
 
     name: str = "BFS"
 

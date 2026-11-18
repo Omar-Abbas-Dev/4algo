@@ -1,20 +1,9 @@
-"""Depth-First Search (DFS) algorithm.
-
-DFS explores as deep as possible before backtracking.  It is NOT
-guaranteed to find the shortest or cheapest path; it returns whichever
-path it reaches the goal via first.  On a grid this often means a
-winding, expensive route — high explored count and high fuel cost are
-expected and illustrate DFS's weakness compared to informed searches.
-"""
-
 from typing import List, Optional, Dict
 from engine.domain.grid import Grid, Position
 from engine.domain.search import SearchResult
 
 
 class DepthFirstSearch:
-    """DFS — complete but not optimal."""
-
     name: str = "DFS"
 
     def search(self, grid: Grid, start: Position, goal: Position) -> SearchResult:

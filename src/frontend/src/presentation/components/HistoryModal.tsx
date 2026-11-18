@@ -55,23 +55,22 @@ export const HistoryModal: React.FC<Props> = ({ isOpen, onClose, onLoadReplay })
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter"
-      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
-      <div className="glass-bright rounded-2xl max-w-3xl w-full shadow-2xl shadow-black/70
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop-enter race-modal-backdrop">
+      <div className="glass-bright race-modal rounded-2xl max-w-3xl w-full
         max-h-[90vh] flex flex-col modal-panel-enter border border-white/[0.1]">
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 glow-blue">
+            <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20">
               <History className="w-6 h-6 text-blue-400" />
             </div>
             <div>
               <h2 className="text-xl font-black text-white" style={{ fontFamily: 'Space Grotesk, sans-serif' }}>
-                Race History
+                Race Replay
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                {totalCount} race{totalCount !== 1 ? 's' : ''} recorded — click any to replay
+                {totalCount} race{totalCount !== 1 ? 's' : ''} on record — pick one to race again
               </p>
             </div>
           </div>
@@ -168,11 +167,11 @@ export const HistoryModal: React.FC<Props> = ({ isOpen, onClose, onLoadReplay })
                     <button
                       onClick={() => handleReplay(item)}
                       disabled={isReplaying}
-                      className="btn-shimmer shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl
+                      className="shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-xl
                         text-xs font-bold text-white
                         bg-gradient-to-r from-indigo-600 to-indigo-700
                         hover:from-indigo-500 hover:to-indigo-600
-                        shadow-md shadow-indigo-500/20 hover:shadow-indigo-500/40
+                        
                         transition-all duration-200 disabled:opacity-60 active:scale-95"
                     >
                       {isReplaying

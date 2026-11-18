@@ -1,286 +1,389 @@
 @import "tailwindcss";
 
-/* ============================================================
-   NAVX ARENA — Global Design System
-   ============================================================ */
-
-@layer base {
-  :root {
-    --font-sans: 'Inter', system-ui, sans-serif;
-    --font-display: 'Space Grotesk', 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-
-    /* Algorithm brand colors */
-    --color-bfs: #3B82F6;
-    --color-dfs: #EC4899;
-    --color-greedy: #F97316;
-    --color-astar: #10B981;
-
-    /* Glow intensities */
-    --glow-bfs: rgba(59, 130, 246, 0.6);
-    --glow-dfs: rgba(236, 72, 153, 0.6);
-    --glow-greedy: rgba(249, 115, 22, 0.6);
-    --glow-astar: rgba(16, 185, 129, 0.6);
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    @apply bg-slate-950 text-slate-100 antialiased;
-    font-family: var(--font-sans);
-    background-image:
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
-  }
-
-  h1, h2, h3 {
-    font-family: var(--font-display);
-  }
-
-  .font-mono, code, .tabular-nums {
-    font-family: var(--font-mono);
-  }
-
-  ::selection {
-    @apply bg-emerald-500/30 text-emerald-100;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-slate-700 rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-600; }
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #293b46;
+  background: #eeeae0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================================
-   GLASSMORPHISM PANELS
-   ============================================================ */
-.glass {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: #eeeae0; }
+button { font: inherit; }
+
+.arena-game {
+  --paper: #fffdf7;
+  --paper-deep: #f4f0e6;
+  --ink: #293b46;
+  --muted: #71808a;
+  --line: #d8d6ca;
+  --green: #187d5a;
+  min-height: 100vh;
+  color: var(--ink);
+  background: #eeeae0;
 }
 
-.glass-bright {
-  background: rgba(30, 41, 59, 0.6);
-  backdrop-filter: blur(24px) saturate(1.6);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+.game-main { width: min(100%, 1720px); margin: 0 auto; padding: 10px clamp(10px, 1.5vw, 22px) 14px; display: grid; gap: 9px; align-content: start; }
+.game-arena { width: 100%; height: clamp(310px, 48vh, 660px); min-height: 310px; }
+.city-stage { width: 100%; height: 100%; padding: 4px !important; overflow: hidden; border: 1px solid #aeb3af !important; border-radius: 15px !important; background: #343b3f !important; box-shadow: none !important; }
+.city-stage canvas { display: block; width: 100%; height: 100%; border: 0; border-radius: 11px; box-shadow: none; }
+
+.game-panel { min-width: 0; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 13px; }
+.game-kicker { display: inline-flex; align-items: center; gap: 5px; color: #6f7d80; font-size: 9px; font-weight: 900; letter-spacing: .13em; white-space: nowrap; }
+
+.race-console { padding: 9px 12px; }
+.race-console-main { display: grid; grid-template-columns: auto minmax(180px, 1.2fr) minmax(145px, .9fr); align-items: center; gap: 10px; }
+.race-start-button, .race-action-button { min-height: 39px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; color: #fff; background: #187d5a; border: 0; border-radius: 9px; font-size: 10px; font-weight: 900; letter-spacing: .1em; cursor: pointer; }
+.race-start-button:hover { background: #126d4e; }
+.race-start-button:disabled { opacity: .5; cursor: wait; }
+.race-start-button.icon-only { width: 44px; min-width: 44px; height: 44px; min-height: 44px; padding: 0; border-radius: 12px; }
+.race-start-button.pause { color: #fff; background: #bf7626; }
+.race-start-button.resume { color: #fff; background: #187d5a; }
+.game-spinner { width: 15px; height: 15px; border: 2px solid #ffffff80; border-top-color: white; border-radius: 50%; animation: game-spin .7s linear infinite; }
+@keyframes game-spin { to { transform: rotate(360deg); } }
+.race-action-group { display: flex; align-items: center; gap: 6px; }
+.race-action-button { min-height: 34px; padding: 0 11px; background: #bd7a27; font-size: 9px; }
+.race-action-button.resume { background: #187d5a; }
+.race-action-button.reset { color: #59696e; background: #f0eee6; border: 1px solid var(--line); }
+.race-console-racers { display: flex; flex-direction: column; gap: 5px; }
+.race-console-racers .game-kicker b { color: #273c47; }
+.racer-picker { display: flex; flex-wrap: nowrap; gap: 5px; }
+.racer-chip { min-height: 26px; display: inline-flex; align-items: center; gap: 5px; padding: 0 8px; color: #8a9293; background: #f3f1ea; border: 1px solid #e1ded4; border-radius: 7px; font-size: 9px; font-weight: 800; cursor: pointer; }
+.racer-chip.selected { color: #fff; background: var(--racer-color); border-color: var(--racer-color); }
+.racer-chip:disabled { cursor: not-allowed; opacity: .55; }
+.racer-car-icon { color: currentColor; }
+.race-speed-control { display: flex; flex-direction: column; gap: 5px; }
+.race-speed-options { display: flex; gap: 3px; padding: 3px; background: #f1efe7; border: 1px solid #dedbcf; border-radius: 8px; }
+.race-speed-options button { flex: 1; min-width: 27px; height: 24px; padding: 0 4px; color: #68767b; background: transparent; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; cursor: pointer; }
+.race-speed-options button.active { color: white; background: #b87528; }
+
+.track-deck { padding: 8px 11px; }
+.track-deck-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+.track-deck-heading > div:first-child { display: flex; align-items: center; gap: 10px; }
+.track-deck-heading .game-kicker { color: #92703d; }
+.track-deck-help { color: var(--muted); font-size: 9px; }
+.track-deck-tools { display: flex; gap: 5px; }
+.track-deck-tools button { position: relative; width: 28px; height: 26px; display: grid; place-items: center; color: #687b7e; background: #f1efe7; border: 1px solid #dedbcf; border-radius: 7px; cursor: pointer; }
+.history-count { position: absolute; top: -5px; right: -5px; min-width: 14px; height: 14px; display: grid; place-items: center; color: #fff; background: #d28a32; border-radius: 7px; font-size: 8px; font-weight: 900; }
+.track-deck-content { display: grid; grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 1fr) auto; align-items: center; gap: 10px; }
+.track-piece-picker { display: flex; gap: 5px; }
+.track-piece { flex: 1; min-width: 0; height: 39px; display: flex; align-items: center; justify-content: center; gap: 5px; color: #788486; background: #f4f2eb; border: 1px solid #e4e0d5; border-radius: 8px; font-size: 9px; font-weight: 800; cursor: pointer; }
+.track-piece svg { width: 14px; height: 14px; }
+.track-piece.selected { color: var(--piece-color); background: color-mix(in srgb, var(--piece-color) 9%, white); border-color: color-mix(in srgb, var(--piece-color) 38%, white); }
+.track-piece:disabled, .track-presets button:disabled, .track-deck-actions button:disabled { opacity: .5; cursor: not-allowed; }
+.track-presets { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.track-presets .game-kicker { margin-right: 2px; }
+.track-presets button { min-width: 0; display: inline-flex; align-items: center; gap: 4px; padding: 6px 7px; overflow: hidden; color: #56676c; background: #fffdf7; border: 1px solid #e4e0d5; border-radius: 7px; font-size: 8px; font-weight: 750; white-space: nowrap; text-overflow: ellipsis; cursor: pointer; }
+.course-number { color: #b27a3f; font-size: 8px; font-weight: 900; }
+.track-deck-actions { display: flex; gap: 4px; }
+.track-deck-actions button { min-height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 0 8px; color: #657376; background: #f4f2eb; border: 1px solid #e0ddd2; border-radius: 7px; font-size: 8px; font-weight: 900; letter-spacing: .04em; cursor: pointer; }
+.track-deck-actions button.save-course { color: #187d5a; background: #eaf3eb; border-color: #cfdfd0; }
+
+.race-board { padding: 7px 9px 9px; }
+.race-board-heading { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 6px; }
+.race-board-heading .game-kicker { color: #a16f35; }
+.race-state { color: #768286; font-size: 8px; font-weight: 900; letter-spacing: .11em; }
+.race-state.live { color: #187d5a; }
+.race-state.finished { color: #b87728; }
+.race-board-grid { display: grid; grid-template-columns: repeat(var(--racer-count), minmax(0, 1fr)); gap: 6px; }
+.racer-score-card { min-width: 0; padding: 7px 8px 6px; background: #fffefa; border: 1px solid #e2dfd4; border-top: 3px solid var(--racer-color); border-radius: 8px; }
+.racer-score-card.winner { background: #f0f6ec; border-color: #c7dcc4; border-top-color: #198b63; }
+.racer-score-card.no-path { opacity: .58; }
+.racer-score-title { display: flex; align-items: center; gap: 6px; min-height: 17px; }
+.racer-rank { width: 17px; height: 17px; display: grid; place-items: center; color: #8a7654; background: #f2eee3; border-radius: 5px; font-size: 9px; font-weight: 900; }
+.racer-score-name { color: var(--racer-color); font-size: 11px; font-weight: 900; }
+.winner-tag, .no-path-tag { margin-left: auto; color: #187d5a; font-size: 7px; font-weight: 900; letter-spacing: .06em; }
+.no-path-tag { color: #bd4d53; }
+.racer-metrics { display: flex; justify-content: space-between; gap: 4px; margin-top: 5px; }
+.racer-metrics > span { min-width: 0; display: flex; align-items: center; gap: 3px; color: #899194; }
+.racer-metrics > span svg { flex: 0 0 auto; color: var(--racer-color); }
+.racer-metrics b { color: #34464d; font-size: 10px; font-variant-numeric: tabular-nums; }
+.racer-metrics small { color: #8d9697; font-size: 7px; font-weight: 800; }
+.racer-fuel-track { height: 3px; margin-top: 5px; overflow: hidden; background: #e8e5dc; border-radius: 3px; }
+.racer-fuel-track span { display: block; height: 100%; background: var(--racer-color); border-radius: inherit; transition: width .2s linear; }
+.racer-score-foot { margin-top: 4px; color: #8b9595; font-size: 7px; font-weight: 800; letter-spacing: .08em; text-align: right; }
+
+/* Raised paper-and-enamel race panel, matching the supplied arcade HUD reference. */
+.game-lower-panels { display: grid; grid-template-columns: minmax(225px, 255px) minmax(0, 1fr); align-items: start; gap: 17px; }
+.game-track-column { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+.race-console { position: relative; z-index: 1; min-height: 132px; padding: 13px 22px; overflow: visible; border: 3px solid #51483b; border-radius: 17px 17px 11px 17px; background: linear-gradient(180deg,#796f5c 0%,#625a4b 100%); box-shadow: 0 5px 0 #342f28, inset 0 2px 0 #b2a58d, inset 0 -3px 0 #51493d; }
+.race-console::before { content: ''; position: absolute; z-index: -1; inset: -7px -3px -8px; clip-path: polygon(0 16%,2% 8%,25% 8%,27% 0,75% 0,77% 8%,98% 8%,100% 16%,100% 84%,98% 92%,27% 92%,25% 100%,2% 100%,0 92%); background: #493f33; }
+.race-console-main { min-height: 100px; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr) 142px; grid-template-areas: "racers pace play"; gap: 14px; }
+.race-console-racers { grid-area: racers; gap: 8px; }
+.race-console-racers .game-kicker { width: fit-content; padding: 5px 10px; color: #292720; background: #f0ead8; border: 2px solid #332d25; border-radius: 20px; box-shadow: inset 0 2px 0 white, 0 2px 0 #494235; font-size: 11px; }
+.race-console-racers .game-kicker b { margin-left: 2px; color: #292720; }
+.racer-picker { gap: 7px; }
+.racer-chip { width: 58px; height: 58px; min-height: 58px; flex-direction: column; justify-content: center; gap: 1px; padding: 4px; border: 2px solid #473e31; border-radius: 50%; box-shadow: inset 0 3px 1px #ffffff88, 0 3px 0 #3a3329; font-size: 10px; }
+.racer-chip.selected { color: #172227; background: color-mix(in srgb,var(--racer-color) 55%, #dcd3bd); border-color: #302c26; box-shadow: inset 0 3px 1px #ffffff90, 0 3px 0 #3a3329; }
+.racer-car-icon { width: 14px; height: 14px; }
+.race-speed-control { grid-area: pace; gap: 6px; align-self: center; }
+.race-speed-control .game-kicker { padding-left: 4px; color: #f2eddf; font-size: 13px; letter-spacing: .08em; }
+.race-speed-options { min-height: 60px; align-items: center; gap: 2px; padding: 7px; overflow: hidden; background: #f2eddf; border: 3px solid #393229; border-radius: 8px; box-shadow: inset 0 2px 0 white, 0 3px 0 #423b30; transform: skewY(-5deg); }
+.race-speed-options button { height: 36px; color: #1d201f; border-radius: 6px; font-size: 14px; font-weight: 900; transform: skewY(5deg); }
+.race-speed-options button.active { color: #fff; background: #544b3d; box-shadow: inset 0 2px 0 #8f836b, 0 2px 0 #302b24; }
+.race-action-group { grid-area: play; justify-self: end; align-self: center; gap: 8px; }
+.race-start-button { grid-area: play; width: 132px; min-width: 132px; height: 132px; min-height: 132px; flex-direction: column; gap: 1px; padding: 8px; border: 5px solid #332e27; border-radius: 50%; color: #fffdf0; background: radial-gradient(circle at 42% 28%,#21885d 0 48%,#126044 72%); box-shadow: inset 0 4px 0 #83b394, inset 0 -6px 0 #0d4c37, 0 6px 0 #302b25; font-size: 27px; font-weight: 1000; line-height: 1; letter-spacing: .02em; }
+.race-start-button:hover { background: radial-gradient(circle at 42% 28%,#269365 0 48%,#126044 72%); }
+.race-start-button.pause { background: radial-gradient(circle at 42% 28%,#c88734 0 48%,#8a4d1f 72%); }
+.race-start-button.resume { background: radial-gradient(circle at 42% 28%,#21885d 0 48%,#126044 72%); }
+.race-start-button:disabled { opacity: .7; }
+.race-action-button.reset { width: auto; min-width: 44px; height: 35px; min-height: 35px; flex-direction: row; border: 2px solid #3a3329; border-radius: 8px; box-shadow: inset 0 2px 0 white, 0 3px 0 #443c30; }
+
+.game-lower-panels .track-deck { padding: 16px 13px 13px; border: 2px solid #675b46; border-radius: 14px 14px 19px 19px; background: #efe7d2; box-shadow: inset 0 2px 0 #fff8e8, 0 4px 0 #bdb29c; }
+.track-deck-heading { position: relative; height: 38px; margin: -27px 0 11px -22px; justify-content: flex-start; }
+.track-deck-heading::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 208px; clip-path: polygon(0 0,88% 0,100% 50%,88% 100%,0 100%); background: #3b352b; border: 2px solid #29251f; box-shadow: inset 0 2px 0 #877b65, 0 4px 0 #241f1a; }
+.track-deck-heading > div:first-child { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; padding-left: 14px; }
+.track-deck-heading .game-kicker { color: #f5efdf; font-size: 15px; letter-spacing: .03em; }
+.track-deck-help { display: none; }
+.track-deck-content { display: block; }
+.track-piece-picker { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+.track-piece { height: 82px; flex-direction: column; gap: 5px; color: #272720; background: linear-gradient(#f6efd9,#d4c8aa); border: 2px solid #61543e; border-radius: 11px; box-shadow: inset 0 2px 0 #fff8e8, 0 4px 0 #9b8c70; font-size: 14px; }
+.track-piece svg { width: 24px; height: 24px; stroke-width: 2.5; }
+.track-piece.selected { color: #2d281f; background: linear-gradient(#fff5dc,#d9c59e); border-color: #42372a; box-shadow: inset 0 2px 0 white, 0 4px 0 #71634c; }
+.track-presets { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin-top: 15px; }
+.track-presets .game-kicker { grid-column: 1 / -1; display: none; }
+.track-presets button { min-height: 64px; justify-content: center; flex-direction: column; gap: 2px; color: #292820; background: linear-gradient(#f5eed9,#d4c7a7); border: 2px solid #64573e; border-radius: 10px; box-shadow: inset 0 2px 0 #fff8e8, 0 4px 0 #9b8c70; font-size: 12px; }
+.course-number { color: #312e26; font-size: 17px; font-weight: 1000; }
+.track-deck-actions { justify-content: space-around; gap: 4px; margin: 17px -2px 0; padding: 8px 5px; background: linear-gradient(#e5dac0,#cfc1a2); border: 2px solid #61543e; border-radius: 13px; box-shadow: inset 0 2px 0 #fff6e0, 0 4px 0 #988a6d; }
+.track-deck-actions button { min-height: 53px; flex-direction: column; gap: 4px; padding: 3px; color: #292820; background: transparent; border: 0; border-radius: 6px; font-size: 10px; }
+.track-deck-actions button svg { width: 22px; height: 22px; }
+.track-deck-actions button.save-course { color: #292820; background: transparent; border: 0; }
+
+.game-lower-panels .race-board { min-width: 0; padding: 16px 10px 12px; border: 2px solid #c3b594; border-radius: 16px; background: #eee7d5; box-shadow: inset 0 2px 0 #fff8e8; }
+.race-board-heading { position: relative; height: 38px; margin: -27px 0 11px -19px; justify-content: flex-start; }
+.race-board-heading::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 210px; clip-path: polygon(0 0,88% 0,100% 50%,88% 100%,0 100%); background: #39342a; border: 2px solid #28241e; box-shadow: inset 0 2px 0 #877b65, 0 4px 0 #241f1a; }
+.race-board-heading .game-kicker { position: relative; z-index: 1; padding-left: 14px; color: #f5efdf; font-size: 15px; letter-spacing: .03em; }
+.race-state { margin-left: auto; color: #736b5d; }
+.race-board-grid { display: flex; flex-direction: column; gap: 12px; }
+.racer-card-row { display: grid; grid-template-columns: repeat(var(--racer-count),minmax(0,1fr)); gap: 10px; }
+.racer-score-card { display: block; }
+.racer-score-main, .racer-score-detail { position: relative; min-width: 0; min-height: 210px; display: flex; flex-direction: column; align-items: stretch; padding: 17px 12px 0; overflow: hidden; color: #22231f; background: linear-gradient(180deg,#f8f2df 0%,#eee6d0 75%,#d9cdae 75%,#d4c7a7 100%); border: 2px solid #61553f; border-radius: 14px; box-shadow: inset 0 3px 0 #fff8e8, inset 0 -3px 0 #ad9d7d, 0 4px 0 #9a8c71; }
+.racer-score-main.winner, .racer-score-detail.winner { border-color: color-mix(in srgb,var(--racer-color) 55%,#564833); }
+.racer-score-name, .racer-detail-name { color: var(--racer-color); font-size: 30px; font-weight: 1000; line-height: 1.2; text-align: center; }
+.racer-score-bar { height: 21px; margin: 14px 0 20px; padding: 2px; overflow: hidden; background: #f8f5e8; border: 2px solid #a29474; border-radius: 20px; box-shadow: inset 0 2px 4px #6b5e4738, 0 2px 0 #fff7e2; }
+.racer-score-bar span { display: block; height: 100%; background: linear-gradient(90deg,color-mix(in srgb,var(--racer-color) 80%,white),var(--racer-color)); border-radius: inherit; }
+.racer-score-metrics { display: flex; align-items: center; justify-content: space-around; gap: 3px; min-height: 42px; margin: 0 -12px; padding: 0 9px; background: #eee6d0; }
+.racer-score-metrics span { display: flex; align-items: center; gap: 4px; color: var(--racer-color); }
+.racer-score-metrics b { min-width: 27px; padding: 1px 4px; color: #272721; background: #d9d0b9; border-radius: 6px; font-size: 20px; text-align: center; }
+.racer-score-metrics small { color: #25251f; font-size: 11px; font-weight: 900; }
+.racer-place { display: grid; place-items: center; min-height: 42px; margin: auto -12px 0; color: #24241f; font-size: 14px; font-weight: 1000; }
+.racer-score-detail { min-height: 228px; padding-top: 15px; }
+.racer-detail-name { font-size: 30px; }
+.racer-score-detail .racer-score-bar { margin: 13px 0 11px; }
+.racer-detail-pills { display: flex; flex-direction: column; gap: 8px; }
+.racer-detail-pills span { min-height: 38px; display: flex; align-items: center; gap: 7px; padding: 0 9px; color: var(--racer-color); background: #ddd2b5; border-radius: 9px; font-size: 16px; font-weight: 900; }
+.racer-detail-pills b { color: #22231f; font-size: 12px; }
+.racer-score-main .winner-tag, .racer-score-main .no-path-tag { position: absolute; top: 6px; right: 8px; margin: 0; }
+
+@media (max-width: 780px) {
+  .game-lower-panels { grid-template-columns: minmax(0,1fr); gap: 18px; }
+  .game-track-column { max-width: none; }
+  .game-lower-panels .track-piece-picker { grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .game-lower-panels .track-piece { height: 68px; }
+  .game-lower-panels .track-presets { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .game-lower-panels .track-deck-actions { max-width: 300px; margin-left: auto; margin-right: auto; }
+  .racer-card-row { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .racer-score-main, .racer-score-detail { min-height: 176px; padding: 12px 8px 0; }
+  .racer-score-name, .racer-detail-name { font-size: 22px; }
+  .racer-score-metrics { margin-left: -8px; margin-right: -8px; padding: 0 3px; }
+  .racer-score-metrics svg { width: 15px; }
+  .racer-score-metrics b { min-width: 20px; font-size: 15px; }
+  .racer-score-metrics small { font-size: 8px; }
+  .racer-score-detail .racer-detail-pills span { min-height: 31px; gap: 4px; padding: 0 5px; font-size: 11px; }
+  .racer-detail-pills b { font-size: 8px; }
 }
 
-/* ============================================================
-   AMBIENT GRID BACKGROUND
-   ============================================================ */
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+@media (max-width: 520px) {
+  .race-console { padding: 10px; }
+  .race-console-main { grid-template-columns: minmax(0,1fr) 92px; grid-template-areas: "racers play" "pace pace"; gap: 10px; }
+  .race-console-racers .game-kicker { font-size: 9px; padding: 3px 7px; }
+  .racer-chip { width: 45px; height: 45px; min-height: 45px; font-size: 8px; }
+  .race-start-button { width: 82px; min-width: 82px; height: 82px; min-height: 82px; border-width: 4px; font-size: 17px; }
+  .race-action-group { grid-area: play; flex-direction: column; }
+  .race-action-button.reset { width: 44px; }
+  .race-speed-options { min-height: 44px; transform: none; }
+  .race-speed-options button { height: 29px; transform: none; font-size: 11px; }
+  .game-lower-panels .track-piece { font-size: 10px; }
+  .race-board-heading .game-kicker, .track-deck-heading .game-kicker { font-size: 12px; }
 }
 
-/* ============================================================
-   NEON GLOW UTILITIES
-   ============================================================ */
-.glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 0 40px rgba(16, 185, 129, 0.15); }
-.glow-blue    { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), 0 0 40px rgba(59, 130, 246, 0.15); }
-.glow-purple  { box-shadow: 0 0 20px rgba(139, 92, 246, 0.4); }
-.glow-amber   { box-shadow: 0 0 20px rgba(245, 158, 11, 0.4); }
-.glow-sm-emerald { box-shadow: 0 0 10px rgba(16, 185, 129, 0.35); }
-.glow-sm-blue    { box-shadow: 0 0 10px rgba(59, 130, 246, 0.35); }
+/* Final layout pass: bind the city and HUD into one game surface. */
+.arena-game { background: #ded5c2; }
+.game-main { width: min(100%, 1720px); margin: 10px auto 18px; padding: 12px; background: #eee6d3; border: 2px solid #c3b594; border-radius: 20px; box-shadow: inset 0 2px 0 #fff8e8, 0 5px 0 #c4b99f; }
+.gameplay-section { padding: 7px; background: linear-gradient(#e4dac3,#d8c9a8); border: 2px solid #897b60; border-radius: 19px; box-shadow: inset 0 2px 0 #fff5dd, 0 4px 0 #b8aa8c; }
+.gameplay-section .game-arena { height: clamp(310px,48vh,660px); margin: 0; }
+.gameplay-section .city-stage { border-color: #4f493e !important; border-radius: 14px !important; }
+.gameplay-section .race-console { margin-top: 9px; }
+.race-speed-options { transform: none; clip-path: polygon(3% 9%,100% 0,100% 93%,0 100%); }
+.race-speed-options button { transform: none; }
+.race-board-grid { display: grid; grid-template-columns: repeat(var(--racer-count),minmax(0,1fr)); gap: 10px; }
+.racer-card-row { display: contents; }
+.racer-score-card { min-width: 0; display: flex; flex-direction: column; align-items: stretch; padding: 12px 10px 0; overflow: hidden; background: linear-gradient(180deg,#f8f2df 0%,#f4edda 75%,#d9cdae 75%,#d4c7a7 100%); border: 2px solid #61553f; border-top: 4px solid var(--racer-color); border-radius: 13px; box-shadow: inset 0 3px 0 #fff8e8, inset 0 -3px 0 #ad9d7d, 0 4px 0 #9a8c71; }
+.racer-score-card.winner { border-color: color-mix(in srgb,var(--racer-color) 55%,#564833); }
+.racer-score-title { min-height: 31px; justify-content: center; gap: 8px; }
+.racer-rank { width: 25px; height: 25px; font-size: 12px; }
+.racer-score-name { color: var(--racer-color); font-size: 25px; font-weight: 1000; line-height: 1; }
+.winner-tag, .no-path-tag { position: static; margin-left: auto; font-size: 8px; }
+.racer-score-bar { height: 19px; margin: 13px 0 15px; padding: 2px; background: #f8f5e8; border: 2px solid #a29474; border-radius: 20px; box-shadow: inset 0 2px 4px #6b5e4738, 0 2px 0 #fff7e2; }
+.racer-score-bar span { display: block; height: 100%; background: linear-gradient(90deg,color-mix(in srgb,var(--racer-color) 80%,white),var(--racer-color)); border-radius: inherit; }
+.racer-score-metrics { display: flex; align-items: center; justify-content: space-around; gap: 4px; min-height: 47px; margin: 0 -10px; padding: 0 7px; background: #eee6d0; }
+.racer-score-metrics span { display: flex; align-items: center; gap: 4px; color: var(--racer-color); }
+.racer-score-metrics b { min-width: 28px; padding: 1px 4px; color: #272721; background: #d9d0b9; border-radius: 6px; font-size: 18px; text-align: center; }
+.racer-score-metrics small { color: #25251f; font-size: 9px; font-weight: 900; }
+.racer-card-foot { min-height: 39px; display: flex; align-items: center; justify-content: space-between; gap: 4px; margin: auto -10px 0; padding: 0 9px; color: #403a2e; font-size: 8px; font-weight: 900; letter-spacing: .04em; }
+.racer-card-foot b { color: #22231f; font-size: 11px; }
+.racer-score-card.no-path { opacity: .65; }
+.track-deck-heading { margin-bottom: 24px; }
+.track-deck-help { position: absolute; top: 39px; left: 12px; display: block; padding: 1px 4px; color: #615b4e; background: #f4ecd8; border-radius: 4px; font-size: 9px; white-space: nowrap; }
+.race-board-guide { position: absolute; z-index: 1; top: 12px; left: 220px; margin: 0; color: #5f584b; font-size: 8px; font-weight: 850; white-space: nowrap; }
+.race-state { position: absolute; z-index: 1; top: 12px; right: 2px; margin: 0; color: #5f584b; }
 
-/* ============================================================
-   CUSTOM KEYFRAME ANIMATIONS
-   ============================================================ */
-@keyframes navx-pulse-ring {
-  0%   { transform: scale(1);    opacity: 0.8; }
-  70%  { transform: scale(1.6);  opacity: 0;   }
-  100% { transform: scale(1.6);  opacity: 0;   }
+@media (max-width: 900px) {
+  .gameplay-section .game-arena { height: clamp(300px,46vh,560px); }
+  .game-lower-panels { grid-template-columns: minmax(0,1fr); }
+  .game-track-column { max-width: none; }
 }
-
-@keyframes navx-float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-6px); }
+@media (max-width: 780px) {
+  .race-board-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .game-lower-panels .track-piece-picker { grid-template-columns: repeat(5,minmax(0,1fr)); }
 }
-
-@keyframes navx-shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
-
-@keyframes navx-scan-line {
-  0%   { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes navx-countdown {
-  0%   { transform: scale(2);   opacity: 0; }
-  20%  { transform: scale(1);   opacity: 1; }
-  80%  { transform: scale(1);   opacity: 1; }
-  100% { transform: scale(0.5); opacity: 0; }
-}
-
-@keyframes navx-winner-appear {
-  0%   { transform: scale(0.8) translateY(10px); opacity: 0; }
-  60%  { transform: scale(1.05) translateY(-2px); opacity: 1; }
-  100% { transform: scale(1) translateY(0);       opacity: 1; }
-}
-
-@keyframes navx-bar-fill {
-  from { width: 0%; }
-  to   { width: var(--bar-width); }
-}
-
-@keyframes navx-tick {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-
-@keyframes navx-orbit {
-  from { transform: rotate(0deg) translateX(14px) rotate(0deg);   }
-  to   { transform: rotate(360deg) translateX(14px) rotate(-360deg); }
+@media (max-width: 520px) {
+  .game-main { padding: 7px; }
+  .gameplay-section { padding: 5px; }
+  .gameplay-section .game-arena { height: 44vh; min-height: 270px; }
+  .race-board-grid { gap: 8px; }
+  .racer-score-card { padding: 9px 7px 0; }
+  .racer-score-name { font-size: 20px; }
+  .racer-score-metrics { margin-left: -7px; margin-right: -7px; padding: 0 3px; }
+  .racer-score-metrics svg { width: 15px; }
+  .racer-score-metrics b { min-width: 20px; font-size: 14px; }
+  .racer-score-metrics small { font-size: 7px; }
+  .racer-card-foot { margin-left: -7px; margin-right: -7px; padding: 0 6px; }
+  .racer-card-foot b { font-size: 9px; }
+  .track-deck-help { max-width: 175px; overflow: hidden; text-overflow: ellipsis; }
+  .race-board-guide { display: none; }
 }
 
-@keyframes navx-bg-move {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* Keep the hand-drawn city surface while giving the surrounding controls a game HUD treatment. */
+.arena-game .glass, .arena-game .glass-bright { color: #293b46; background: #fffdf7; border: 1px solid #d8d6ca; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.arena-game .race-modal { color: #293b46 !important; background: #fffdf7 !important; border: 1px solid #d8d6ca !important; border-radius: 16px !important; }
+.arena-game .race-modal [class*="text-"] { color: #46575d !important; }
+.arena-game .race-modal h2 { color: #293b46 !important; }
+.arena-game .race-modal [class*="bg-gradient-to-r"] { background-image: none !important; background-color: #f0f3eb !important; }
+.arena-game .race-modal [class*="bg-indigo-950"], .arena-game .race-modal [class*="bg-purple-950"], .arena-game .race-modal [class*="bg-blue-950"] { background-color: #f1f3eb !important; }
+.arena-game .race-modal-backdrop { background: rgba(33, 45, 45, .46) !important; }
+.arena-game [class~="text-white"], .arena-game [class~="text-slate-100"], .arena-game [class~="text-slate-200"], .arena-game [class~="text-slate-300"] { color: #293b46 !important; }
+.arena-game [class~="text-slate-400"], .arena-game [class~="text-slate-500"], .arena-game [class~="text-slate-600"] { color: #71808a !important; }
+.arena-game [class*="bg-white/["] , .arena-game [class*="bg-black/"] { background-color: #f3f1e9 !important; }
+.arena-game [class*="border-white/"] { border-color: #dedbcf !important; }
+.arena-game [class*="shadow-"] { --tw-shadow: 0 0 #0000 !important; box-shadow: none !important; }
+.arena-game *, .arena-game *::before, .arena-game *::after { text-shadow: none !important; box-shadow: none !important; filter: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.city-toolbox { border-radius: 13px !important; }
+.city-utility-button { height: 30px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: #f1efe7; color: #687b7e; border-radius: 7px; }
+.city-utility-count { position: absolute; top: -4px; right: -4px; min-width: 14px; height: 14px; border-radius: 50%; display: grid; place-items: center; background: #d28a32; color: white; font: 700 9px sans-serif; }
+
+@media (max-width: 900px) {
+  .game-main { gap: 7px; padding-top: 8px; }
+  .game-arena { height: clamp(300px, 46vh, 560px); }
+  .race-console-main { grid-template-columns: auto minmax(170px, 1.2fr) minmax(135px, .9fr); grid-template-areas: "racers pace play"; gap: 7px; }
+  .track-deck-content { grid-template-columns: 1fr; gap: 6px; }
+  .track-piece { height: 31px; }
+  .track-presets { overflow-x: auto; }
+  .track-deck-actions { position: static; margin: 0; }
 }
 
-/* ============================================================
-   ANIMATION UTILITY CLASSES
-   ============================================================ */
-.animate-pulse-ring {
-  animation: navx-pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-}
-.animate-float {
-  animation: navx-float 3s ease-in-out infinite;
-}
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: navx-shimmer 2s linear infinite;
-}
-.animate-countdown {
-  animation: navx-countdown 1s ease-in-out forwards;
-}
-.animate-winner {
-  animation: navx-winner-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-.animate-bg-move {
-  animation: navx-bg-move 8s ease infinite;
-  background-size: 200% 200%;
-}
-.animate-tick {
-  animation: navx-tick 1s ease-in-out infinite;
+@media (max-width: 620px) {
+  .game-arena { height: 44vh; min-height: 270px; }
+  .race-console { padding: 8px; }
+  .race-console-main { grid-template-columns: 1fr auto; gap: 8px; }
+  .race-console-racers { grid-column: 1; grid-row: 1; }
+  .race-start-button, .race-action-group { grid-column: 2; grid-row: 1; }
+  .race-speed-control { grid-column: 1 / -1; flex-direction: row; align-items: center; justify-content: space-between; }
+  .race-speed-options { flex: 1; max-width: 260px; }
+  .track-deck { padding: 7px; }
+  .track-deck-heading > div:first-child { gap: 6px; }
+  .track-deck-help { display: none; }
+  .track-deck-actions { position: static; margin: 0; }
+  .track-piece-picker { gap: 3px; }
+  .track-piece { flex-direction: column; gap: 2px; height: 40px; font-size: 8px; }
+  .track-piece svg { width: 13px; height: 13px; }
+  .track-presets .game-kicker { display: none; }
+  .track-presets button { flex: 1; justify-content: center; }
+  .track-deck-actions button { flex: 1; }
+  .race-board-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .racer-metrics small { font-size: 6px; }
 }
 
-/* ============================================================
-   GRADIENT TEXT
-   ============================================================ */
-.gradient-text-brand {
-  background: linear-gradient(135deg, #10B981 0%, #3B82F6 50%, #8B5CF6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
 
-.gradient-text-gold {
-  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 50%, #FDE68A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Stable HUD geometry: race state changes the button label, never the layout. */
+.race-console-main {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr) 220px;
+  grid-template-rows: 132px;
+  grid-template-areas: "racers pace play";
+  align-items: center;
 }
-
-/* ============================================================
-   BUTTON HOVER SHIMMER
-   ============================================================ */
-.btn-shimmer {
-  position: relative;
-  overflow: hidden;
+.race-console-racers { grid-area: racers; min-width: 0; }
+.race-speed-control { grid-area: pace; min-width: 0; }
+.race-action-group {
+  grid-area: play;
+  width: 214px;
+  min-height: 132px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-.btn-shimmer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
-  transform: translateX(-100%);
-  transition: transform 0.5s;
-}
-.btn-shimmer:hover::after {
-  transform: translateX(100%);
-}
-
-/* ============================================================
-   ALGO CARD HOVER BORDER GLOW
-   ============================================================ */
-.algo-card-bfs:hover   { border-color: rgba(59,130,246,0.6);  box-shadow: 0 0 24px rgba(59,130,246,0.15); }
-.algo-card-dfs:hover   { border-color: rgba(236,72,153,0.6);  box-shadow: 0 0 24px rgba(236,72,153,0.15); }
-.algo-card-greedy:hover{ border-color: rgba(249,115,22,0.6);  box-shadow: 0 0 24px rgba(249,115,22,0.15); }
-.algo-card-astar:hover { border-color: rgba(16,185,129,0.6);  box-shadow: 0 0 24px rgba(16,185,129,0.15); }
-
-/* ============================================================
-   MODAL BACKDROP ENTRY
-   ============================================================ */
-.modal-backdrop-enter {
-  animation: modal-fade-in 0.2s ease forwards;
-}
-.modal-panel-enter {
-  animation: modal-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-@keyframes modal-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-@keyframes modal-slide-up {
-  from { opacity: 0; transform: scale(0.95) translateY(16px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0);    }
-}
-
-/* ============================================================
-   PROGRESS BAR ANIMATED
-   ============================================================ */
-.progress-bar-animated {
-  animation: navx-bar-fill 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-/* ============================================================
-   SCAN LINE EFFECT (subtle decorative)
-   ============================================================ */
-.scan-line::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(16,185,129,0.3), transparent);
-  animation: navx-scan-line 4s linear infinite;
+.race-action-group .race-start-button { flex: 0 0 132px; }
+.race-action-button.reset.reserved {
+  visibility: hidden;
   pointer-events: none;
 }
+.racer-card-foot b.first-place { display: inline-flex; align-items: center; gap: 4px; }
+.racer-card-foot .first-place svg { color: #d49b19; stroke-width: 2.8; }
 
-/* ============================================================
-   RANK MEDALS
-   ============================================================ */
-.medal-gold   { color: #FBBF24; text-shadow: 0 0 8px rgba(251,191,36,0.6); }
-.medal-silver { color: #94A3B8; text-shadow: 0 0 8px rgba(148,163,184,0.4); }
-.medal-bronze { color: #D97706; text-shadow: 0 0 8px rgba(217,119,6,0.4); }
+.track-deck-content { gap: 17px; }
+.track-piece-picker { gap: 9px; }
+.track-piece { padding: 7px 5px; }
+.track-presets { gap: 9px; margin-top: 18px; }
+.track-deck-actions { gap: 10px; margin-top: 20px; padding: 10px; }
+.track-deck-actions button { min-height: 42px; }
 
-/* ============================================================
-   TOOL BUTTON ACTIVE STATE
-   ============================================================ */
-.tool-active {
-  position: relative;
+@media (max-width: 900px) {
+  .race-console-main {
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-rows: 132px auto;
+    grid-template-areas: "racers play" "pace pace";
+    row-gap: 12px;
+  }
+  .race-action-group { justify-self: end; align-self: center; }
+  .race-speed-control { width: 100%; flex-direction: row; align-items: center; }
+  .race-console-main .race-speed-options { width: 100%; max-width: none; }
+  .track-deck-content { gap: 14px; }
+  .track-piece-picker { gap: 8px; }
+  .track-presets { margin-top: 6px; padding-top: 13px; border-top: 1px solid #c9bea5; }
+  .track-deck-actions { margin-top: 5px; padding: 10px 12px; }
 }
-.tool-active::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(135deg, currentColor, transparent);
-  opacity: 0.2;
-  pointer-events: none;
+@media (max-width: 620px) {
+  .race-console-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto 92px auto;
+    grid-template-areas: "racers" "play" "pace";
+    gap: 10px;
+  }
+  .race-action-group { width: 184px; min-height: 92px; justify-self: center; }
+  .race-action-group .race-start-button { flex-basis: 82px; width: 82px; min-width: 82px; height: 82px; min-height: 82px; font-size: 17px; }
+  .race-action-group .race-action-button.reset { width: 82px; min-height: 38px; }
+  .race-speed-control { flex-direction: column; align-items: stretch; }
+  .track-piece-picker { gap: 8px; }
+  .track-presets { flex-wrap: wrap; }
+  .track-deck-actions { gap: 8px; }
+}
+@media (max-width: 430px) {
+  .game-lower-panels .track-piece-picker { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .game-lower-panels .track-piece { min-height: 56px; }
+  .track-deck-actions { flex-wrap: wrap; }
+  .track-deck-actions button { flex: 1 1 30%; }
 }

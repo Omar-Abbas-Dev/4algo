@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NavX.Application.Abstractions;
 using NavX.Domain.Services;
-using NavX.Infrastructure.Audio;
 using NavX.Infrastructure.Caching;
 using NavX.Infrastructure.Engine;
 using NavX.Infrastructure.Persistence;
@@ -55,10 +54,6 @@ public static class DependencyInjection
             sp.GetRequiredService<PythonRaceEngine>(),
             sp.GetRequiredService<ICacheService>(),
             sp.GetRequiredService<ILogger<CachedRaceEngine>>()));
-
-        // 6. Audio Generation (NAudio)
-        services.Configure<SoundEffectOptions>(configuration.GetSection(SoundEffectOptions.SectionName));
-        services.AddSingleton<ISoundEffectGenerator, NAudioSoundEffectGenerator>();
 
         return services;
     }

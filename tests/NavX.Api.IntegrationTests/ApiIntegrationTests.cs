@@ -179,14 +179,4 @@ public class ApiIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
         stats.Wins.ShouldContainKey("Greedy");
     }
 
-    [Fact]
-    public async Task AudioEffects_ShouldReturnAvailableWavList()
-    {
-        var response = await _client.GetAsync("/api/audio/effects");
-
-        response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        var effects = await response.Content.ReadFromJsonAsync<List<string>>();
-        effects.ShouldNotBeNull();
-        effects.ShouldContain("winner_fanfare.wav");
-    }
 }
